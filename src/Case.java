@@ -25,7 +25,8 @@ import javax.swing.JPanel;
 public class Case extends JPanel implements MouseListener{
 	private static final int WIDTH_CASE = 50;
 	private static final int HEIGHT_CASE = 50;
-	private boolean discover = false;
+	private static final String MINES = "./img/mines.png";
+	private boolean discover;
 	private int x;
 	private int y;
 	private IHMDemin ihm;
@@ -36,6 +37,7 @@ public class Case extends JPanel implements MouseListener{
 		this.x = x;
 		this.y = y;
 		this.ihm = ihm;
+		discover = false;
 	}
 	@Override
 		public void paint(Graphics g) {
@@ -45,10 +47,10 @@ public class Case extends JPanel implements MouseListener{
 			if(!discover) {
 				setBackground(Color.gray);
 			} else if(ihm.getDemineur().getChamp().isMine(x, y)) {
-				//g.drawString("X",getWidth()/2, getHeight()/2);
-				Toolkit toolkit = getToolkit();
-				g.drawImage(toolkit.getImage("/mines.png").getScaledInstance(getWidth(), getHeight(),  Image.SCALE_SMOOTH), 0,0,this); 
-				//setBackground(Color.white);
+				g.drawString("X",getWidth()/2, getHeight()/2);
+				//Toolkit toolkit = getToolkit();
+				//g.drawImage(toolkit.getImage(MINES), 0,0,this); 
+				setBackground(Color.white);
 			} else {
 				g.drawString(Integer.toString(ihm.getDemineur().getChamp().calculMines(x, y)),getWidth()/2, getHeight()/2);
 				setBackground(Color.white);

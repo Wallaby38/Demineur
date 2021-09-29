@@ -20,8 +20,7 @@ public class Champ {
 	}
 	
 	public Champ(Level level) {
-		champ = new boolean [DIM[level.ordinal()]] [DIM[level.ordinal()]];
-		this.level = level;
+		setLevel(level);
 		
 	}
 	
@@ -143,5 +142,10 @@ public class Champ {
 	 */
 	public boolean isMine(int x, int y) {
 		return(champ[x][y]);
+	}
+	
+	public void setLevel(Level level) {
+		champ = new boolean [DIM[level.ordinal()]] [DIM[level.ordinal()]];
+		this.level = level;
 	}
 }
