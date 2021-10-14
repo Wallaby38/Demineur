@@ -30,6 +30,9 @@ public class Case extends JPanel implements MouseListener{
 	private int x;
 	private int y;
 	private IHMDemin ihm;
+	private boolean flag;
+	
+	
 	Case(int x, int y,IHMDemin ihm) {
 		setPreferredSize(new Dimension(WIDTH_CASE,HEIGHT_CASE));
 		addMouseListener(this);
@@ -38,6 +41,7 @@ public class Case extends JPanel implements MouseListener{
 		this.y = y;
 		this.ihm = ihm;
 		discover = false;
+		flag = false;
 	}
 	@Override
 		public void paint(Graphics g) {
@@ -45,7 +49,11 @@ public class Case extends JPanel implements MouseListener{
 			//our design
 			g.drawRect(0, 0, getWidth(), getHeight());
 			if(!discover) {
-				setBackground(Color.gray);
+				if(flag) {
+					setBackground(Color.red);
+				} else {
+					setBackground(Color.gray);
+				}
 			} else if(ihm.getDemineur().getChamp().isMine(x, y)) {
 				g.drawString("X",getWidth()/2, getHeight()/2);
 				//Toolkit toolkit = getToolkit();
@@ -59,7 +67,12 @@ public class Case extends JPanel implements MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		discover = true;
+		//e.getButton();
+		if(e.getButton() == 1) {
+			discover = true;
+		} else if(e.getButton() == 2) {
+			flag = !flag;
+		}
 		repaint();
 	}
 	@Override

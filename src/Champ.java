@@ -12,6 +12,7 @@ public class Champ {
 	
 	private Random alea = new Random();
 	private boolean [][] champ;
+	private int [][] champJoueur;
 	
 	
 	public Champ() {
@@ -27,6 +28,8 @@ public class Champ {
 	public Champ(int x, int y) {
 		this.level = Level.EASY;
 		champ = new boolean [x][y];
+		champJoueur = new int [x][y];
+		
 	}
 	/**
 	 * empty the champ
@@ -35,6 +38,7 @@ public class Champ {
 		for(int i = 0;i<champ.length;i++) {
 			for(int j = 0; j< champ[0].length;j++) {
 				champ[i][j]=false;
+				champJoueur[i][j] = 0;
 			}
 		}
 	}
@@ -134,6 +138,15 @@ public class Champ {
 			return Integer.toString(calculMines(i, j));
 		}
 	}
+	
+	public int getValuesOfCase(int i, int j) {
+		if(champ[i][j]) {
+			return -1;
+		} else {
+			return calculMines(i, j);
+		}
+	}
+	
 	/**
 	 * Find if the cell is a mine
 	 * @param x
@@ -148,4 +161,9 @@ public class Champ {
 		champ = new boolean [DIM[level.ordinal()]] [DIM[level.ordinal()]];
 		this.level = level;
 	}
+	
+	public void setJoueur(int x, int y,int j) {
+		champJoueur[x][y] = j;
+	}
+	
 }

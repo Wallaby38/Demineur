@@ -1,6 +1,11 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -21,10 +26,17 @@ public class Demineur extends JFrame{
 	 */
 	private Champ champ ;
 	private IHMDemin ihm;
+	private Socket sock;
+	private boolean online;
+	private DataOutputStream out;
+	private DataInputStream in;
+	
+	
 	Demineur() {
 		champ = new Champ(Level.EASY);
 		this.champ.placeMines();
 		ihm = new IHMDemin(this);
+		online = false;
 		setTitle("hello");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setContentPane(ihm);
@@ -65,11 +77,35 @@ public class Demineur extends JFrame{
 				newGame(Level.HARD);
 			}
 		});
+		
+		
+		
 		menuDifficulte.add(mEasy);
 		menuDifficulte.add(mMedium);
 		menuDifficulte.add(mHard);
+		JMenu menuNetwork = new JMenu("Network");
+		JMenuItem mConnect = new JMenuItem("Connect to host");
+		mConnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				connectToServer();
+			}
+		});
+		
+		JMenuItem mQuit = new JMenuItem("Quit online");
+		mQuit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				quitServer();
+			}
+		});
+		
+		menuNetwork.add(mConnect);
+		menuNetwork.add(mQuit);
+		
+		
 		menuBar.add(menuPartie) ;
 		menuBar.add(menuDifficulte);
+		menuBar.add(menuNetwork);
+		
 		this.setJMenuBar(menuBar) ;
 		pack();
 		setVisible(true);
@@ -103,6 +139,31 @@ public class Demineur extends JFrame{
 		setContentPane(ihm);
 		pack();
 		setVisible(true);
+	}
+	
+	public void connectToServer() {
+		System.out.println("try to connect to serv");
+		try {
+			sock = new Socket("localhost",10000);
+			out =new DataOutputStream(sock.getOutputStream());
+			in = new DataInputStream(sock.getInputStream());
+			online = true;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void quitServer() {
+		System.out.println("try to disconnect to serv");
+		try {
+			in.close();
+			out.close();
+			sock.close();
+			online = false;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
