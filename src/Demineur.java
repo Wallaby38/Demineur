@@ -37,6 +37,9 @@ public class Demineur extends JFrame{
 		this.champ.placeMines();
 		ihm = new IHMDemin(this);
 		online = false;
+		
+		
+		
 		setTitle("hello");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setContentPane(ihm);
@@ -148,6 +151,7 @@ public class Demineur extends JFrame{
 			out =new DataOutputStream(sock.getOutputStream());
 			in = new DataInputStream(sock.getInputStream());
 			online = true;
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -157,12 +161,42 @@ public class Demineur extends JFrame{
 	public void quitServer() {
 		System.out.println("try to disconnect to serv");
 		try {
-			in.close();
-			out.close();
-			sock.close();
+			out.writeInt(1);
+//			in.close();
+//			out.close();
+//			sock.close();
 			online = false;
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public boolean isOnline() {
+		return online;
+	}
+	
+	
+	public int clickOnCase(int x, int y) {
+		try {
+			out.writeInt(1);
+			out.writeInt(x);
+			out.writeInt(y);
+			int val = in.readInt();
+			System.out.println("val " + val);
+			return(val);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return(-2);
+	}
+	
+	public int getValueOffline(int x,int y) {
+		if(champ.isMine(x,y)) {
+			return(-1);
+			//implements end of game
+		} else {
+			return(champ.calculMines(x, y));
 		}
 	}
 	

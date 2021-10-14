@@ -21,6 +21,7 @@ public class Champ {
 	}
 	
 	public Champ(Level level) {
+		this(DIM[level.ordinal()],DIM[level.ordinal()]);
 		setLevel(level);
 		
 	}
@@ -165,5 +166,11 @@ public class Champ {
 	public void setJoueur(int x, int y,int j) {
 		champJoueur[x][y] = j;
 	}
+	
+	public int isClicked(int x,int y) {
+		return champJoueur[x][y];
+	}
+	
+	
 	
 }

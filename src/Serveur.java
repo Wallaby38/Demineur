@@ -24,7 +24,7 @@ public class Serveur implements Runnable{
 	
 	Serveur() {
 		System.out.println("Démarrage du serveur") ;
-		numero = 0;
+		numero = 1;
 		champ = new Champ(Level.MEDIUM);
 		champ.placeMines();
 		entree = new ArrayList<DataInputStream>();
@@ -87,29 +87,39 @@ public class Serveur implements Runnable{
 		boolean run = true;
 		Thread t = Thread.currentThread();
 		System.out.println("Entrée run");
-		
+		DataInputStream dataInput = entree.get(Integer.parseInt(t.getName())-1);
+		DataOutputStream dataOutput = sortie.get(Integer.parseInt(t.getName())-1);
 		while(run) {
 			System.out.println(t.getName());
-			DataInputStream dataInput = entree.get(Integer.parseInt(t.getName()));
-			DataOutputStream dataOutput = sortie.get(Integer.parseInt(t.getName()));
+			
 			try {
-				int cmd = dataInput.readInt() ;
+				int cmd = dataInput.readInt();
+				
+				System.out.println("cmd "+cmd);
 				switch (cmd) {
-				case 0: { //Quit					
-					dataInput.close();
-					dataOutput.close();
+				case 0: { //Quit
+					System.out.println("Deconnection du joueur");
 					run = false;
 				}
 				case 1: { //Click on a case take 2 int and return if the value of the case (-1 if mines, 0, 1,2,3 etc)
+					System.out.println("case 1");
 					int x = dataInput.readInt();
+					System.out.println("x " +x);
 					int y = dataInput.readInt();
+					System.out.println("y " +y);
 					if(champ.isMine(x,y)) {
-						dataOutput.write(-1);
+						System.out.println("Test");
+						dataOutput.writeInt(-1);
 						//implements end of game
+					} else if(champ.isClicked(x,y) == 0){
+						dataOutput.writeInt(champ.calculMines(x, y));
+						champ.setJoueur(x, y, Integer.parseInt(t.getName())-1);
+						//notifyall
 					} else {
-						dataOutput.write(champ.calculMines(x, y));
+						dataOutput.writeInt(-2);
+						//do nothing
 					}
-					champ.setJoueur(x, y, Integer.parseInt(t.getName()));
+					
 				}
 				case 2: {
 									
@@ -119,12 +129,21 @@ public class Serveur implements Runnable{
 					
 					
 				}
-				default:
-					throw new IllegalArgumentException("Unexpected value: " + cmd);
-				}
+			}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+				run = false;
 				e.printStackTrace();
+			}
+			if(run == false) {
+				System.out.print("coucou");
+				try {
+					dataInput.close();
+					dataOutput.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
