@@ -160,6 +160,7 @@ public class Champ {
 	
 	public void setLevel(Level level) {
 		champ = new boolean [DIM[level.ordinal()]] [DIM[level.ordinal()]];
+		champJoueur = new int [DIM[level.ordinal()]] [DIM[level.ordinal()]];
 		this.level = level;
 	}
 	
@@ -171,6 +172,9 @@ public class Champ {
 		return champJoueur[x][y];
 	}
 	
-	
+	public Level getLevel() {
+		return level;
+	}
+
 	
 }

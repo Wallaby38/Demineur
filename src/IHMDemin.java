@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.EventListener;
 import java.util.Timer;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -25,19 +26,26 @@ public class IHMDemin extends JPanel implements ActionListener{
 	private JButton newGameButton;
 	private Case [][] caseLand;
 	private JPanel labelMines;
-	private Compteur compteur;
+	private JPanel labelScore;
+	//private Compteur compteur;
 	IHMDemin(Demineur demineur) {
 		
-		compteur = new Compteur();
+		//compteur = new Compteur();
 		
 		this.demineur = demineur;
 		labelMines = new JPanel();
 		newGameButton = new JButton("Nouvelle partie");
 		this.setLayout(new BorderLayout());
 		add(newGameButton,BorderLayout.SOUTH);
-		add(new JLabel("Score"),BorderLayout.EAST);
-		add(new JLabel("Difficulté"),BorderLayout.NORTH);
-		add(compteur,BorderLayout.WEST);
+		
+		labelScore = new JPanel();
+		labelScore.setLayout(new BoxLayout(labelScore,1));
+		labelScore.add(new JLabel("Score"));
+		labelScore.add(new JLabel("Player " +demineur.getPlayer() + " : " + Integer.toString(demineur.getScore())));
+		add(labelScore,BorderLayout.WEST);
+		
+		//add(new JLabel("Difficulté"),BorderLayout.NORTH);
+		//add(compteur,BorderLayout.WEST);
 		
 		
 		newGameButton.addActionListener(this);
@@ -52,9 +60,9 @@ public class IHMDemin extends JPanel implements ActionListener{
 	/**
 	 * refresh all the labelMines
 	 */
-	public void refresh() {
+	synchronized public void refresh() {
 		labelMines.removeAll();
-		labelMines.setLayout(new GridLayout(demineur.getChamp().getDimX(),demineur.getY()));
+		labelMines.setLayout(new GridLayout(demineur.getChamp().getDimX(),demineur.getChamp().getDimY()));
 		
 		for(int i = 0; i<demineur.getChamp().getDimX();i++) {
 			
@@ -69,8 +77,8 @@ public class IHMDemin extends JPanel implements ActionListener{
 		return demineur;
 	}
 	
-	public void refreshLevelDim() {
-		caseLand = new Case [demineur.getChamp().getDimX()][demineur.getChamp().getDimX()];
+	synchronized public void refreshLevelDim() {
+		caseLand = new Case [demineur.getChamp().getDimX()][demineur.getChamp().getDimY()];
 		
 		
 		for(int i = 0; i<demineur.getChamp().getDimX();i++) {
@@ -84,4 +92,13 @@ public class IHMDemin extends JPanel implements ActionListener{
 	}
 	
 	
+	synchronized public void playerClickedOnCase(int x,int y, int player,int value) {
+		caseLand[x][y].setPlayer(player);
+		caseLand[x][y].setValue(value);
+		caseLand[x][y].setDiscover(true);
+		this.getDemineur().setContentPane(this.getDemineur().getIHM());
+		this.getDemineur().pack();
+		this.getDemineur().setVisible(true);
+		refresh();
+	}
 }

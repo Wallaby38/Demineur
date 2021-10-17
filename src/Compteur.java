@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class Compteur extends JPanel implements ActionListener{
+	private static final int DELAY = 1000;
 	private int compteur;
 	private Timer timer;
 	private JLabel label;
@@ -14,7 +15,7 @@ public class Compteur extends JPanel implements ActionListener{
 		super();
 		label = new JLabel();
 		add(label);
-		timer = new Timer(1000,this);
+		timer = new Timer(DELAY,this);
 		compteur = 0;
 		timer.start();
 		
@@ -36,6 +37,8 @@ public class Compteur extends JPanel implements ActionListener{
 		label.setText(Integer.toString(compteur));
 	
 	}
+	
+	
 	
 
 	

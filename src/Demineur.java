@@ -19,7 +19,7 @@ import javax.swing.KeyStroke;
  * @version 1.0
  *
  */
-public class Demineur extends JFrame{
+public class Demineur extends JFrame implements Runnable{
 	/**
 	 * 
 	 * @param args not used
@@ -30,17 +30,22 @@ public class Demineur extends JFrame{
 	private boolean online;
 	private DataOutputStream out;
 	private DataInputStream in;
-	
+	private int player;
+	private Thread t;
+	private int score;
+	private int nbPlayer;
 	
 	Demineur() {
 		champ = new Champ(Level.EASY);
 		this.champ.placeMines();
 		ihm = new IHMDemin(this);
 		online = false;
+		player = 0;
+		score = 0;
+		nbPlayer = 1;
 		
 		
-		
-		setTitle("hello");
+		setTitle("Demineur");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setContentPane(ihm);
 		JMenuBar menuBar = new JMenuBar();
@@ -128,11 +133,7 @@ public class Demineur extends JFrame{
 	}
 	
 	public void newGame() {
-		champ.placeMines();
-		ihm.refresh();
-		setContentPane(ihm);
-		pack();
-		setVisible(true);
+		newGame(champ.getLevel());
 	}
 	public void newGame(Level level) {
 		champ.setLevel(level);
@@ -151,6 +152,10 @@ public class Demineur extends JFrame{
 			out =new DataOutputStream(sock.getOutputStream());
 			in = new DataInputStream(sock.getInputStream());
 			online = true;
+			Thread t = new Thread(this);
+			t.start();
+			//setPlayerFromServer();
+			
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -166,6 +171,8 @@ public class Demineur extends JFrame{
 //			out.close();
 //			sock.close();
 			online = false;
+			player = 0;
+			t.interrupt();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -176,19 +183,16 @@ public class Demineur extends JFrame{
 	}
 	
 	
-	public int clickOnCase(int x, int y) {
+	public void clickOnCase(int x, int y) {
 		try {
 			out.writeInt(1);
 			out.writeInt(x);
 			out.writeInt(y);
-			int val = in.readInt();
-			System.out.println("val " + val);
-			return(val);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return(-2);
+		
 	}
 	
 	public int getValueOffline(int x,int y) {
@@ -198,6 +202,78 @@ public class Demineur extends JFrame{
 		} else {
 			return(champ.calculMines(x, y));
 		}
+	}
+
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		try {
+			while(online) {
+				int cmd = in.readInt();
+				
+				System.out.println("cmd "+cmd);
+				switch (cmd) {
+					case 0: { //
+						
+					}
+					case 1: { //A player click on a case
+						int x = in.readInt();
+						int y = in.readInt();
+						int player = in.readInt();
+						int value = in.readInt();
+						System.out.println("x " + x +" y "+ y +" player " + player + " value " +value);
+						this.ihm.playerClickedOnCase(x,y,player,value);
+						break;
+						
+					}
+					case 2: { //
+						player = in.readInt();				
+						System.out.println("player " +player);
+						break;
+					}
+					case 3: { //reset
+						int level = in.readInt();
+						newGame(Level.values()[level]);
+						break;
+					}
+					case 4: {
+						
+						break;
+					}
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public int getPlayer() {
+		return player;
+	}
+	
+	public void setPlayerFromServer() {
+		try {
+			out.writeInt(2);
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+		}
+		
+	}
+	
+	public IHMDemin getIHM() {
+		return ihm;
+	}
+	
+	public int getScore() {
+		return score;
+	}
+	
+	public void setScore(int score) {
+		this.score = score;
 	}
 	
 }
