@@ -6,6 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -40,7 +41,7 @@ public class Demineur extends JFrame implements Runnable{
 		this.champ.placeMines();
 		ihm = new IHMDemin(this);
 		online = false;
-		player = 0;
+		player = 1;
 		score = 0;
 		nbPlayer = 1;
 		
@@ -154,7 +155,8 @@ public class Demineur extends JFrame implements Runnable{
 			online = true;
 			Thread t = new Thread(this);
 			t.start();
-			//setPlayerFromServer();
+			setPlayerFromServer();
+			
 			
 			
 		} catch (IOException e) {
@@ -171,7 +173,7 @@ public class Demineur extends JFrame implements Runnable{
 //			out.close();
 //			sock.close();
 			online = false;
-			player = 0;
+			player = 1;
 			t.interrupt();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -227,8 +229,8 @@ public class Demineur extends JFrame implements Runnable{
 						break;
 						
 					}
-					case 2: { //
-						player = in.readInt();				
+					case 2: { //get player number
+						player = in.readInt();
 						System.out.println("player " +player);
 						break;
 					}
@@ -237,8 +239,18 @@ public class Demineur extends JFrame implements Runnable{
 						newGame(Level.values()[level]);
 						break;
 					}
-					case 4: {
-						
+					case 4: {//get scores
+						int nbPlayer = in.readInt();
+						System.out.print("nb player = " + nbPlayer);
+						ArrayList<Integer> scores = new ArrayList<Integer>();
+						ArrayList<Integer> players = new ArrayList<Integer>();
+						for(int i=0; i<nbPlayer;i++) {
+							players.add(i+1);
+							int s = in.readInt();
+							System.out.print(", score = " + s);
+							scores.add(s);
+						}
+						ihm.updateScore(scores, players);
 						break;
 					}
 				}
@@ -263,7 +275,10 @@ public class Demineur extends JFrame implements Runnable{
 		}
 		
 	}
-	
+	/**
+	 * 
+	 * @return ihm
+	 */
 	public IHMDemin getIHM() {
 		return ihm;
 	}

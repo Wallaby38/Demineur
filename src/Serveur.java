@@ -37,8 +37,7 @@ public class Serveur implements Runnable{
 		score = new ArrayList<Integer>();
 		
 		
-		Thread back = new Thread(this,"back");
-		back.start();
+		
 		
 		try {
 			gestSock=new ServerSocket(10000);
@@ -82,7 +81,7 @@ public class Serveur implements Runnable{
 			numero ++;
 		}
 		
-	
+
 	/**
 	 * @param args
 	 */
@@ -90,23 +89,29 @@ public class Serveur implements Runnable{
 		// TODO Auto-generated method stub
 		new Serveur();
 	}
+	
+	
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		sendScore();
+		Thread t = Thread.currentThread();
+		int player = Integer.parseInt(t.getName());
+		
 		if(Thread.currentThread().getName() == "back") {
-			back();
+			//back();
 		} else {
 			boolean run = true;
-			Thread t = Thread.currentThread();
 			System.out.println("Entrée run");
 			if(Integer.parseInt(t.getName())==0) {
 				
 			} else {
-				DataInputStream dataInput = entree.get(Integer.parseInt(t.getName())-1);
-				DataOutputStream dataOutput = sortie.get(Integer.parseInt(t.getName())-1);
+				DataInputStream dataInput = entree.get(player-1);
+				DataOutputStream dataOutput = sortie.get(player-1);
 				try {
 					dataOutput.writeInt(2);	
-					dataOutput.writeInt(Integer.parseInt(t.getName()));
+					dataOutput.writeInt(player);
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -127,9 +132,9 @@ public class Serveur implements Runnable{
 						case 1: { //Click on a case take 2 int and return if the value of the case (-1 if mines, 0, 1,2,3 etc)
 							System.out.println("case 1");
 							int x = dataInput.readInt();
-							System.out.println("x " +x);
+							//System.out.println("x " +x);
 							int y = dataInput.readInt();
-							System.out.println("y " +y);
+							//System.out.println("y " +y);
 	//						if(champ.isMine(x,y)) {
 	//							System.out.println("end of game");
 	//							sendValueAndPlayer(x,y,Integer.parseInt(t.getName()),-1);
@@ -138,20 +143,22 @@ public class Serveur implements Runnable{
 	//						} else 
 							if(champ.isClicked(x,y) == 0){
 								if(champ.isMine(x, y)) {
-									sendValueAndPlayer(x,y,Integer.parseInt(t.getName()),-1);
-									champ.setJoueur(x, y, Integer.parseInt(t.getName())-1);
+									sendValueAndPlayer(x,y,player,-1);
+									champ.setJoueur(x, y, player-1);
 								} else {
-									sendValueAndPlayer(x,y,Integer.parseInt(t.getName()),champ.calculMines(x, y));
-									champ.setJoueur(x, y, Integer.parseInt(t.getName())-1);
+									sendValueAndPlayer(x,y,player,champ.calculMines(x, y));
+									champ.setJoueur(x, y, player-1);
+									score.set(player-1,score.get(player-1)+1);
 								}
 							
 							}
+							sendScore();
 							break;
 						}
-						case 2: { //get numero of player
+						case 2: { //send numero of player
 							System.out.println("case 2");
-							//dataOutput.writeInt(2);	
-							//dataOutput.writeInt(Integer.parseInt(t.getName()));			
+							dataOutput.writeInt(2);	
+							dataOutput.writeInt(Integer.parseInt(t.getName()));			
 							break;			
 						}
 						case 3: {
@@ -180,6 +187,14 @@ public class Serveur implements Runnable{
 		
 	}
 	
+	/**
+	 * Send value of the case to all player and the player who discover it
+	 * @param x
+	 * @param y
+	 * @param player
+	 * @param value
+	 */
+	
 	synchronized public void sendValueAndPlayer(int x,int y, int player, int value) {
 		for(int counter = 0; counter < sortie.size(); counter++) {
 			try {
@@ -188,7 +203,7 @@ public class Serveur implements Runnable{
 				sortie.get(counter).writeInt(y);
 				sortie.get(counter).writeInt(player);
 				sortie.get(counter).writeInt(value);
-				System.out.println("x " + x +" y "+ y +" player " + player + " value " +value);
+				//System.out.println("x " + x +" y "+ y +" player " + player + " value " +value);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -198,26 +213,27 @@ public class Serveur implements Runnable{
 	}
 	
 	
-	public void back() {
-//		while(true) {
-//		try {
-//			wait(50);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//			for(int counter = 0; counter < sortie.size(); counter++) {
-//				try {
-//					sortie.get(counter).writeInt(1);
-//					
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//		
+	/**
+	 * Send scores of all player to all player
+	 */
+	public void sendScore() {
+		for(int counter = 0; counter < sortie.size(); counter++) {
+			try {
+				sortie.get(counter).writeInt(4);
+				sortie.get(counter).writeInt(sortie.size());
+				for(int i=0; i<sortie.size();i++) {
+					sortie.get(counter).writeInt(score.get(i));
+				}
+				
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
+	
+	
 
 	
 	public void resetPartie() {

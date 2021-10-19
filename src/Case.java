@@ -41,7 +41,7 @@ public class Case extends JPanel implements MouseListener{
 		this.x = x;
 		this.y = y;
 		this.ihm = ihm;
-		player = 0;
+		player = 1;
 		flag = false;
 		discover = false;
 	}
@@ -70,7 +70,6 @@ public class Case extends JPanel implements MouseListener{
 							ImageIcon img = new ImageIcon(image);
 							image =img.getImage();
 							g.drawImage(image, 0,0,this); 
-							//setBackground(Color.white);
 						} else {
 							Toolkit toolkit = getToolkit();
 							Image image = toolkit.getImage(PATH2[value]).getScaledInstance(WIDTH_CASE,HEIGHT_CASE,Image.SCALE_SMOOTH);
@@ -79,7 +78,7 @@ public class Case extends JPanel implements MouseListener{
 							g.drawImage(image, 0,0,this); 
 							
 							//g.drawString(Integer.toString(value),getWidth()/2, getHeight()/2);
-							setBackground(Color.white);
+							setBackground(ihm.getCOLORS()[0]);
 						}
 					} else {
 						if(value == -1) {
@@ -98,7 +97,7 @@ public class Case extends JPanel implements MouseListener{
 							g.drawImage(image, 0,0,this); 
 							
 							//g.drawString(Integer.toString(value),getWidth()/2, getHeight()/2);
-							setBackground(Color.pink);
+							setBackground(ihm.getCOLORS()[player]);
 						}
 					}
 				} else {
