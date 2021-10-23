@@ -158,10 +158,14 @@ public class Serveur implements Runnable{
 						case 2: { //send numero of player
 							System.out.println("case 2");
 							dataOutput.writeInt(2);	
-							dataOutput.writeInt(Integer.parseInt(t.getName()));			
+							dataOutput.writeInt(player);			
 							break;			
 						}
-						case 3: {
+						case 3: { //message to chat
+							String message = dataInput.readUTF();
+							int p = dataInput.readInt();
+							sendMessage(message,p);
+							
 							break;
 							
 						}
@@ -239,8 +243,21 @@ public class Serveur implements Runnable{
 	public void resetPartie() {
 		for(int counter = 0; counter < sortie.size(); counter++) {
 			try {
-				sortie.get(counter).write(3);
-				sortie.get(counter).write(champ.getLevel().ordinal());
+				sortie.get(counter).writeInt(3);
+				sortie.get(counter).writeInt(champ.getLevel().ordinal());
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	public void sendMessage(String message, int player) {
+		for(int counter = 0; counter < sortie.size(); counter++) {
+			try {
+				sortie.get(counter).writeInt(5);
+				sortie.get(counter).writeUTF(message);
+				sortie.get(counter).writeInt(player);
 			} catch(IOException e) {
 				e.printStackTrace();
 			}

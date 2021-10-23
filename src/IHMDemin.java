@@ -1,6 +1,9 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -15,6 +18,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  * 
@@ -30,14 +36,23 @@ public class IHMDemin extends JPanel implements ActionListener{
 	private Case [][] caseLand;
 	private JPanel labelMines;
 	private JPanel labelScore;
+	private JTextArea chat;
+	private JPanel labelChat;
+	private JTextField message;
 	
 	private final static Color[] COLORS = {Color.blue,Color.red,Color.pink,Color.cyan,Color.darkGray,Color.gray,Color.magenta,Color.magenta};
+	
+	private ArrayList<String> messages;
 	
 	
 	//private Compteur compteur;
 	IHMDemin(Demineur demineur) {
 		
 		//compteur = new Compteur();
+		
+	
+		
+		
 		
 		this.demineur = demineur;
 		labelMines = new JPanel();
@@ -55,7 +70,60 @@ public class IHMDemin extends JPanel implements ActionListener{
 		jlabel2.setForeground(COLORS[0]);
 		labelScore.add(jlabel2);
 		
-		add(labelScore,BorderLayout.WEST);
+		add(labelScore,BorderLayout.EAST);
+		
+		labelChat = new JPanel(new GridBagLayout());
+		labelChat.setSize(new Dimension(400,400));
+		GridBagConstraints c = new GridBagConstraints();
+		
+		
+		messages = new ArrayList<String>();
+		messages.add("Welcome to the french DEMINEUR!");
+		
+		
+		chat = new JTextArea("Welcome to the french DEMINEUR!\n",5,1);
+		
+		//chat.setText();
+		JScrollPane chatPane = new JScrollPane(chat);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 0;
+		c.gridwidth = 2;
+		c.weighty = 1.0;
+		labelChat.add(chatPane,c);
+		
+		message = new JTextField("Message");
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 1;
+		labelChat.add(message,c);
+		
+		
+		
+		
+		JButton buttonChat = new JButton("Send");
+		buttonChat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				String m = message.getText();
+				if(demineur.isOnline()) {
+					demineur.sendMessage(m);
+				} else {
+					if(!m.equals("")) {
+						messages.add(m);
+						chat.append(m+"\n");
+					}
+				}
+			}});
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 2;
+		labelChat.add(buttonChat,c);
+		
+		
+		
+		
+		add(labelChat,BorderLayout.WEST);
+		
 		
 		//add(new JLabel("Difficulté"),BorderLayout.NORTH);
 		//add(compteur,BorderLayout.WEST);
@@ -122,11 +190,12 @@ public class IHMDemin extends JPanel implements ActionListener{
 		if(player.size()+1 == labelScore.getComponentCount()) {
 			for(int i = 0;i<score.size();i++) {
 				JLabel  label = (JLabel) labelScore.getComponent(i+1);
-				label.setText("Player " +player.get(i) + " : " + score.get(i));
 				if(demineur.getPlayer() == player.get(i)) {
 					label.setForeground(COLORS[0]);
+					label.setText("Player " +player.get(i) + " : " + score.get(i) + " (*)");
 				} else {
 					label.setForeground(COLORS[player.get(i)]);
+					label.setText("Player " +player.get(i) + " : " + score.get(i));
 				}
 				
 			}
@@ -134,8 +203,17 @@ public class IHMDemin extends JPanel implements ActionListener{
 		
 			labelScore.removeAll();
 			labelScore.add(new JLabel("Score"));
+			
 			for(int i = 0;i<score.size();i++) {
-				labelScore.add(new JLabel("Player " +player.get(i) + " : " + Integer.toString(score.get(i))));
+				JLabel label = new JLabel();
+				if(demineur.getPlayer() == player.get(i)) {
+					label.setForeground(COLORS[0]);
+					label.setText("Player " +player.get(i) + " : " + score.get(i) + " (*)");
+				} else {
+					label.setForeground(COLORS[player.get(i)]);
+					label.setText("Player " +player.get(i) + " : " + score.get(i));
+				}
+				labelScore.add(label);
 			}
 		}
 	}
@@ -143,5 +221,14 @@ public class IHMDemin extends JPanel implements ActionListener{
 	public Color[] getCOLORS() {
 		return COLORS;
 	}
+	
+	
+	public void displayMessage(String message,int player) {
+		messages.add(message);
+		chat.append("player " + player + " : " + message +"\n");
+	}
 }
+	
+	
+
 

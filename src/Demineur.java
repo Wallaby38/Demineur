@@ -14,6 +14,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+
 /**
  * 
  * @author Quentin JAYET
@@ -35,6 +36,10 @@ public class Demineur extends JFrame implements Runnable{
 	private Thread t;
 	private int score;
 	private int nbPlayer;
+	
+	
+	
+	
 	
 	Demineur() {
 		champ = new Champ(Level.EASY);
@@ -253,6 +258,13 @@ public class Demineur extends JFrame implements Runnable{
 						ihm.updateScore(scores, players);
 						break;
 					}
+					case 5: { //get message
+						String message = in.readUTF();
+						int player = in.readInt();
+						System.out.println(message);
+						ihm.displayMessage(message,player);
+						break;
+					}
 				}
 			}
 		} catch (IOException e) {
@@ -289,6 +301,16 @@ public class Demineur extends JFrame implements Runnable{
 	
 	public void setScore(int score) {
 		this.score = score;
+	}
+	
+	public void sendMessage(String m) {
+		try {
+			out.writeInt(3);
+			out.writeUTF(m);
+			out.writeInt(this.player);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
