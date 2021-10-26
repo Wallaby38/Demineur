@@ -5,12 +5,19 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
+/**
+ * Implementation of a compteur
+ * @author Quentin
+ *
+ */
 public class Compteur extends JPanel implements ActionListener{
 	private static final int DELAY = 1000;
 	private int compteur;
 	private Timer timer;
 	private JLabel label;
+	/**
+	 * Constructor
+	 */
 	public Compteur() {
 		super();
 		label = new JLabel();
@@ -22,7 +29,10 @@ public class Compteur extends JPanel implements ActionListener{
 	}
 	
 	
-	
+	/**
+	 * get the compteur
+	 * @return
+	 */
 	public int getCompteur() {
 		return compteur;
 	}

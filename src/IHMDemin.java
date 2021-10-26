@@ -46,6 +46,11 @@ public class IHMDemin extends JPanel implements ActionListener{
 	
 	
 	//private Compteur compteur;
+	
+	/**
+	 * Constructor
+	 * @param demineur
+	 */
 	IHMDemin(Demineur demineur) {
 		
 		//compteur = new Compteur();
@@ -132,10 +137,14 @@ public class IHMDemin extends JPanel implements ActionListener{
 		newGameButton.addActionListener(this);
 		refreshLevelDim();
 	}
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		demineur.newGame();
+		if(!demineur.isOnline()) {
+			demineur.newGame();
+		}
 		
 	}
 	/**
@@ -155,10 +164,16 @@ public class IHMDemin extends JPanel implements ActionListener{
 		this.add(labelMines,BorderLayout.CENTER);
 	}
 	
+	/**
+	 * get demineur
+	 * @return
+	 */
 	public Demineur getDemineur() {
 		return demineur;
 	}
-	
+	/**
+	 * refresh the level display of the level dim
+	 */
 	synchronized public void refreshLevelDim() {
 		caseLand = new Case [demineur.getChamp().getDimX()][demineur.getChamp().getDimY()];
 		
@@ -173,7 +188,13 @@ public class IHMDemin extends JPanel implements ActionListener{
 		refresh();
 	}
 	
-	
+	/**
+	 * set all the player and the value of the case (x,y) and repaint it
+	 * @param x
+	 * @param y
+	 * @param player
+	 * @param value
+	 */
 	synchronized public void playerClickedOnCase(int x,int y, int player,int value) {
 		caseLand[x][y].setPlayer(player);
 		caseLand[x][y].setValue(value);
@@ -185,7 +206,11 @@ public class IHMDemin extends JPanel implements ActionListener{
 //		refresh();
 	}
 	
-	
+	/**
+	 * update all the score with color
+	 * @param score
+	 * @param player
+	 */
 	public void updateScore(ArrayList<Integer> score,ArrayList<Integer> player) {
 		if(player.size()+1 == labelScore.getComponentCount()) {
 			for(int i = 0;i<score.size();i++) {
@@ -217,18 +242,28 @@ public class IHMDemin extends JPanel implements ActionListener{
 			}
 		}
 	}
-	
+	/**
+	 * get all the colors possible
+	 * @return
+	 */
 	public Color[] getCOLORS() {
 		return COLORS;
 	}
 	
-	
+	/**
+	 * Display a message in the chat with the number of the player
+	 * @param message
+	 * @param player
+	 */
 	public void displayMessage(String message,int player) {
 		messages.add(message);
 		chat.append("player " + player + " : " + message +"\n");
 	}
 	
-	
+	/**
+	 * get the number of flag set
+	 * @return
+	 */
 	public int getNbFlag() {
 		int n = 0;
 		for(int x=0;x<caseLand.length;x++) {
@@ -240,7 +275,12 @@ public class IHMDemin extends JPanel implements ActionListener{
 		}
 		return n;
 	}
-	
+	/**
+	 * get if the case (x,y) is a flag
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public boolean isFlag(int x, int y) {
 		return caseLand[x][y].isFlag();
 	}

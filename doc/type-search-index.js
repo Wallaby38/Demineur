@@ -1,1 +1,1 @@
-typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"<Unnamed>","l":"Champ"}];updateSearchResults();
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"<Unnamed>","l":"Case"},{"p":"<Unnamed>","l":"Champ"},{"p":"<Unnamed>","l":"Client"},{"p":"<Unnamed>","l":"Compteur"},{"p":"<Unnamed>","l":"Demineur"},{"p":"<Unnamed>","l":"IHMDemin"},{"p":"<Unnamed>","l":"Level"},{"p":"<Unnamed>","l":"Serveur"}];updateSearchResults();

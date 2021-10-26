@@ -14,18 +14,27 @@ public class Champ {
 	private boolean [][] champ;
 	private int [][] champJoueur;
 	
-	
+	/**
+	 * Constructor
+	 */
 	public Champ() {
 		this(DIM[0],DIM[0]);
 		level = Level.EASY;
 	}
-	
+	/**
+	 * Constructor with level
+	 * @param level
+	 */
 	public Champ(Level level) {
 		this(DIM[level.ordinal()],DIM[level.ordinal()]);
 		setLevel(level);
 		
 	}
-	
+	/**
+	 * Constructor with dimension
+	 * @param x
+	 * @param y
+	 */
 	public Champ(int x, int y) {
 		this.level = Level.EASY;
 		champ = new boolean [x][y];
@@ -60,7 +69,7 @@ public class Champ {
 	}
 	
 	/**
-	 * Affiche le champ sous forme de texte en console seulement les mines
+	 * Display the champ in format txt in the terminal (only mines)
 	 */
 	public void affText() {
 		for(int i = 0;i<champ.length;i++) {
@@ -75,10 +84,10 @@ public class Champ {
 		}
 	}
 	/**
-	 * calcul le nombre de mines sur les cases autours de la case (x,y)
+	 * Sum the number of mines around the case (x,y)
 	 * @param x
 	 * @param y
-	 * @return  nombre de mines sur les cases autours de la case (x,y)
+	 * @return  number of mines around the case (x,y)
 	 */
 	public int calculMines(int x,int y) {
 		int n = 0;
@@ -97,7 +106,7 @@ public class Champ {
 		return(n);
 	}
 	/**
-	 * affiche le champ sous forme de texte avec le indication de nombre de mines autours
+	 * Display the champ in format txt in the terminal (with number of mines around)
 	 */
 	public void affText2() {
 		for(int i = 0;i<champ.length;i++) {
@@ -140,6 +149,12 @@ public class Champ {
 		}
 	}
 	
+	/**
+	 * get number of mines around or -1 if mines
+	 * @param i
+	 * @param j
+	 * @return
+	 */
 	public int getValuesOfCase(int i, int j) {
 		if(champ[i][j]) {
 			return -1;
@@ -158,24 +173,45 @@ public class Champ {
 		return(champ[x][y]);
 	}
 	
+	/**
+	 * set level and resize the champ
+	 * @param level
+	 */
 	public void setLevel(Level level) {
 		champ = new boolean [DIM[level.ordinal()]] [DIM[level.ordinal()]];
 		champJoueur = new int [DIM[level.ordinal()]] [DIM[level.ordinal()]];
 		this.level = level;
 	}
-	
+	/**
+	 * set player that clicked the case
+	 * @param x
+	 * @param y
+	 * @param j
+	 */
 	public void setJoueur(int x, int y,int j) {
 		champJoueur[x][y] = j;
 	}
 	
+	/**
+	 * return if the case (x,y) is clicked
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public int isClicked(int x,int y) {
 		return champJoueur[x][y];
 	}
-	
+	/**
+	 * get the level
+	 * @return
+	 */
 	public Level getLevel() {
 		return level;
 	}
-	
+	/**
+	 * get number of mines in the game
+	 * @return
+	 */
 	public int getNbMines() {
 		return MINES[level.ordinal()];
 	}

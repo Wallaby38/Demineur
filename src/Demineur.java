@@ -166,6 +166,11 @@ public class Demineur extends JFrame implements Runnable{
 		ihm.refreshLevelDim();
 		ihm.refresh();
 		score = 0;
+		ArrayList<Integer> scores = new ArrayList<Integer>();
+		ArrayList<Integer> players = new ArrayList<Integer>();
+		scores.add(score);
+		players.add(1);
+		ihm.updateScore(scores, players);
 		setContentPane(ihm);
 		pack();
 		setVisible(true);
@@ -234,7 +239,11 @@ public class Demineur extends JFrame implements Runnable{
 		
 	}
 	
-	
+	/**
+	 * Display a lose Pane if the case (x,y) is a mine and add one to the score if not
+	 * @param x
+	 * @param y
+	 */
 	public void clickOnCaseOffline(int x, int y) {
 		if(champ.isMine(x, y)) {
 			//end of game
@@ -248,7 +257,6 @@ public class Demineur extends JFrame implements Runnable{
 			scores.add(score);
 			players.add(1);
 			ihm.updateScore(scores, players);
-			System.out.println(isWin());
 		}
 	}
 	/**
@@ -268,7 +276,7 @@ public class Demineur extends JFrame implements Runnable{
 	}
 
 	/**
-	 * 
+	 * Thread communication server
 	 */
 	@Override
 	public void run() {
@@ -397,7 +405,10 @@ public class Demineur extends JFrame implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * check if the game is win
+	 * @return
+	 */
 	public boolean isWin() {
 		int n = 0;
 		for(int x=0;x<champ.getDimX();x++) {
@@ -414,7 +425,9 @@ public class Demineur extends JFrame implements Runnable{
 			return false;
 		}
 	}
-	
+	/**
+	 * display a Pane with the message "You win"
+	 */
 	public void win() {
 		JOptionPane.showMessageDialog(popup,
                 "You win","End of game", 1);

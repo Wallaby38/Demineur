@@ -9,6 +9,10 @@ import java.io.* ;
  *
  */
 public class Client {
+	/**
+	 * 
+	 * @param args
+	 */
 	public static void main(String [] args ) {
 		try {// ouverture de la socket et des streams
 		 Socket sock = new Socket("localhost",10000);
