@@ -175,6 +175,9 @@ public class Champ {
 	public Level getLevel() {
 		return level;
 	}
-
+	
+	public int getNbMines() {
+		return MINES[level.ordinal()];
+	}
 	
 }

@@ -8,12 +8,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
-
+import javax.swing.JOptionPane;
 
 /**
  * 
@@ -22,10 +23,7 @@ import javax.swing.KeyStroke;
  *
  */
 public class Demineur extends JFrame implements Runnable{
-	/**
-	 * 
-	 * @param args not used
-	 */
+	
 	private Champ champ ;
 	private IHMDemin ihm;
 	private Socket sock;
@@ -35,20 +33,22 @@ public class Demineur extends JFrame implements Runnable{
 	private int player;
 	private Thread t;
 	private int score;
-	private int nbPlayer;
+	private final JFrame popup;
 	
 	
 	
 	
-	
+	/**
+	 * constructor
+	 */
 	Demineur() {
+		popup = new JFrame();
 		champ = new Champ(Level.EASY);
 		this.champ.placeMines();
 		ihm = new IHMDemin(this);
 		online = false;
 		player = 1;
 		score = 0;
-		nbPlayer = 1;
 		
 		
 		setTitle("Demineur");
@@ -92,17 +92,22 @@ public class Demineur extends JFrame implements Runnable{
 			}
 		});
 		
-		
+        
+
 		
 		menuDifficulte.add(mEasy);
 		menuDifficulte.add(mMedium);
 		menuDifficulte.add(mHard);
 		JMenu menuNetwork = new JMenu("Network");
 		JMenuItem mConnect = new JMenuItem("Connect to host");
-		mConnect.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				connectToServer();
-			}
+		mConnect.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                String ip = JOptionPane.showInputDialog(popup,
+                        "What the IP?", null);
+                System.out.println(ip);
+                connectToServer(ip);
+            }
 		});
 		
 		JMenuItem mQuit = new JMenuItem("Quit online");
@@ -123,38 +128,55 @@ public class Demineur extends JFrame implements Runnable{
 		this.setJMenuBar(menuBar) ;
 		pack();
 		setVisible(true);
-		//champ.affText2();
+		champ.affText2();
 	}
 	
-	
+	/**
+	 * main function
+	 * @param args not used
+	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new Demineur();
 		
 		
 	}
-	
+	/**
+	 * get the champ
+	 * @return
+	 */
 	public Champ getChamp() {
 		return this.champ;
 	}
 	
+	/**
+	 * create a new game with the previous level
+	 */
 	public void newGame() {
 		newGame(champ.getLevel());
 	}
+	
+	/**
+	 * create a new game with the level
+	 * @param level
+	 */
 	public void newGame(Level level) {
 		champ.setLevel(level);
 		champ.placeMines();
 		ihm.refreshLevelDim();
 		ihm.refresh();
+		score = 0;
 		setContentPane(ihm);
 		pack();
 		setVisible(true);
 	}
-	
-	public void connectToServer() {
+	/**
+	 * connect to the server
+	 */
+	public void connectToServer(String ip) {
 		System.out.println("try to connect to serv");
 		try {
-			sock = new Socket("localhost",10000);
+			sock = new Socket(ip,10000);
 			out =new DataOutputStream(sock.getOutputStream());
 			in = new DataInputStream(sock.getInputStream());
 			online = true;
@@ -169,7 +191,9 @@ public class Demineur extends JFrame implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Quit the server
+	 */
 	public void quitServer() {
 		System.out.println("try to disconnect to serv");
 		try {
@@ -185,11 +209,19 @@ public class Demineur extends JFrame implements Runnable{
 		}
 	}
 	
+	/**
+	 * Get the boolean that represent the offline/online status
+	 * @return
+	 */
 	public boolean isOnline() {
 		return online;
 	}
 	
-	
+	/**
+	 * send to the server that the player clicked on a case
+	 * @param x
+	 * @param y
+	 */
 	public void clickOnCase(int x, int y) {
 		try {
 			out.writeInt(1);
@@ -202,6 +234,30 @@ public class Demineur extends JFrame implements Runnable{
 		
 	}
 	
+	
+	public void clickOnCaseOffline(int x, int y) {
+		if(champ.isMine(x, y)) {
+			//end of game
+			 JOptionPane.showMessageDialog(popup,
+                     "You lost with " + score + " points","End of game", 1);
+			 newGame();
+		} else {
+			score ++;
+			ArrayList<Integer> scores = new ArrayList<Integer>();
+			ArrayList<Integer> players = new ArrayList<Integer>();
+			scores.add(score);
+			players.add(1);
+			ihm.updateScore(scores, players);
+			System.out.println(isWin());
+		}
+	}
+	/**
+	 * get the value of the case x y offline
+	 * @param x
+	 * @param y
+	 * @return -1(mines) or number of mines around
+	 */
+	
 	public int getValueOffline(int x,int y) {
 		if(champ.isMine(x,y)) {
 			return(-1);
@@ -211,7 +267,9 @@ public class Demineur extends JFrame implements Runnable{
 		}
 	}
 
-
+	/**
+	 * 
+	 */
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -265,6 +323,17 @@ public class Demineur extends JFrame implements Runnable{
 						ihm.displayMessage(message,player);
 						break;
 					}
+					
+					case 6:{ //end of game bomb discover
+						int x = in.readInt();
+						int y = in.readInt();
+						int s = in.readInt();
+						ihm.playerClickedOnCase(x, y, y, player);
+						JOptionPane.showMessageDialog(popup,
+				                "You lost with : " + s +" point" ,"End of game", 1);
+						break;
+						
+					}
 				}
 			}
 		} catch (IOException e) {
@@ -274,10 +343,17 @@ public class Demineur extends JFrame implements Runnable{
 		
 	}
 	
+	/**
+	 * get the number of the player
+	 * @return the number of the player
+	 */
 	public int getPlayer() {
 		return player;
 	}
 	
+	/**
+	 * ask to the server the number of the player
+	 */
 	public void setPlayerFromServer() {
 		try {
 			out.writeInt(2);
@@ -288,21 +364,30 @@ public class Demineur extends JFrame implements Runnable{
 		
 	}
 	/**
-	 * 
+	 * get the ihm
 	 * @return ihm
 	 */
 	public IHMDemin getIHM() {
 		return ihm;
 	}
-	
+	/**
+	 * get score of the player offline
+	 * @return score offline
+	 */
 	public int getScore() {
 		return score;
 	}
-	
+	/**
+	 * set score of the player
+	 * @param score
+	 */
 	public void setScore(int score) {
 		this.score = score;
 	}
-	
+	/**
+	 * send the m string to the server with the number of the player
+	 * @param m
+	 */
 	public void sendMessage(String m) {
 		try {
 			out.writeInt(3);
@@ -311,6 +396,29 @@ public class Demineur extends JFrame implements Runnable{
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean isWin() {
+		int n = 0;
+		for(int x=0;x<champ.getDimX();x++) {
+			for(int y=0;y<champ.getDimY();y++) {
+				if(champ.isMine(x, y) && ihm.isFlag(x, y)) {
+					n++;
+				}
+			}
+		}
+		System.out.println(n);
+		if(n == champ.getNbMines()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void win() {
+		JOptionPane.showMessageDialog(popup,
+                "You win","End of game", 1);
+		 newGame();
 	}
 	
 }

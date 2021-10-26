@@ -227,6 +227,23 @@ public class IHMDemin extends JPanel implements ActionListener{
 		messages.add(message);
 		chat.append("player " + player + " : " + message +"\n");
 	}
+	
+	
+	public int getNbFlag() {
+		int n = 0;
+		for(int x=0;x<caseLand.length;x++) {
+			for(int y=0;y<caseLand[0].length;y++) {
+				if(caseLand[x][y].isFlag()) {
+					n++;
+				}
+			}
+		}
+		return n;
+	}
+	
+	public boolean isFlag(int x, int y) {
+		return caseLand[x][y].isFlag();
+	}
 }
 	
 	

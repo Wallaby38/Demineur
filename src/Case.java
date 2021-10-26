@@ -161,11 +161,16 @@ public class Case extends JPanel implements MouseListener{
 					player = 1;
 					value = ihm.getDemineur().getValueOffline(x, y);
 					discover = true;
+					repaint();
+					ihm.getDemineur().clickOnCaseOffline(x, y);
 				}
 			} else if(SwingUtilities.isRightMouseButton(e)) {
 				flag = !flag;
 			}
 			repaint();
+			if(ihm.getDemineur().isWin()) {
+				ihm.getDemineur().win();
+			}
 		}
 	}
 	@Override
@@ -196,6 +201,8 @@ public class Case extends JPanel implements MouseListener{
 		repaint();
 	}
 	
-
+	public boolean isFlag() {
+		return flag;
+	}
 	
 }

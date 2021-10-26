@@ -145,6 +145,10 @@ public class Serveur implements Runnable{
 								if(champ.isMine(x, y)) {
 									sendValueAndPlayer(x,y,player,-1);
 									champ.setJoueur(x, y, player-1);
+//									dataOutput.writeInt(6);
+//									dataOutput.writeInt(x);
+//									dataOutput.writeInt(y);
+									
 								} else {
 									sendValueAndPlayer(x,y,player,champ.calculMines(x, y));
 									champ.setJoueur(x, y, player-1);
